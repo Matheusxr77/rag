@@ -9,14 +9,13 @@ embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-Mi
 # Instanciar o vector store com o modelo de incorporação
 vector_store = Chroma(persist_directory="./chroma_db", embedding_function=embedding_model)
 
-# Função para indexar um documento PDF
 def index_pdf(pdf_path):
-    # Importar a função load_pdf e chunk_text
+    """Carrega e indexa um documento PDF."""
     from asserts.pdf_processor import load_pdf, chunk_text
 
-    # Verificar o diretório
+    # Verifica se o diretório do banco de vetores existe
     if not os.path.exists("./chroma_db"):
-        text = load_pdf(pdf_path)
+        text = load_pdf(pdf_path)  # Texto já limpo
         chunks = chunk_text(text)
         vector_store.add_texts(chunks)
 

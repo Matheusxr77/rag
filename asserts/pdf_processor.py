@@ -1,22 +1,23 @@
 # Importar bibliotecas
 import fitz  # PyMuPDF
+import re
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
-# Função para carregar o texto de um arquivo PDF
 def load_pdf(pdf_path):
-    # Abrir o arquivo PDF
+    """Carrega o texto do PDF, limpa espaços extras e caracteres corrompidos."""
     doc = fitz.open(pdf_path)
-
-    # Inicializar a variável de texto
-    text = "\n".join([page.get_text() for page in doc])
     
-    # Retornar o arquivo PDF
+    # Extrair texto de todas as páginas e juntar
+    text = "\n".join([page.get_text("text") for page in doc])
+
+    # Normalizar formatação para evitar problemas de exibição
+    text = re.sub(r'\s+', ' ', text)  # Remove múltiplos espaços
+    text = text.strip()  # Remove espaços extras no início e fim
+
     return text
 
 # Função para dividir o texto em chunks
 def chunk_text(text, chunk_size=256, chunk_overlap=25):
-    # Instanciar o text_splitter com os parâmetros
+    """Divide o texto em chunks menores para processamento"""
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
-
-    # Dividir o texto
     return text_splitter.split_text(text)
