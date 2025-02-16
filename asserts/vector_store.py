@@ -14,15 +14,25 @@ def index_pdf(pdf_path):
     from asserts.pdf_processor import load_pdf, chunk_text
 
     # Verifica se o diretório do banco de vetores existe
-    if not os.path.exists("./chroma_db"):
-        text = load_pdf(pdf_path)  # Texto já limpo
-        chunks = chunk_text(text)
-        vector_store.add_texts(chunks)
+    # if not os.path.exists("./chroma_db"):
+    text = load_pdf("./files/imposto_renda.pdf")  # Texto já limpo
+    chunks = chunk_text(text)
+    vector_store.add_texts(chunks)
+
 
 # Função para pesquisar documentos
-def search_documents(query, top_k=5):
+def search_documents(query, top_k=5, similarity_search=0.85):
+
+    print("Número de documentos indexados:", vector_store._collection.count())
+
     # Pesquisar os documentos no vector store
-    results = vector_store.similarity_search(query, k=top_k)
+    results = vector_store.similarity_search_with_score(query, k=top_k)
+    if not results:
+        print("No results")
+    filtered_results = [res[0].page_content for res in results if res[1] >= similarity_search]
 
     # Retornar os documentos
-    return [res.page_content for res in results]
+    #return [res.page_content for res in results]
+   
+
+    return filtered_results

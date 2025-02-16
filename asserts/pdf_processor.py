@@ -14,6 +14,8 @@ def load_pdf(pdf_path):
     text = re.sub(r'\s+', ' ', text)  # Remove múltiplos espaços
     text = text.strip()  # Remove espaços extras no início e fim
 
+    print(f"Texto extraído: {text[:500]}...") 
+
     return text
 
 # Função para dividir o texto em chunks

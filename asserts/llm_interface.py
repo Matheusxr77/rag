@@ -17,6 +17,9 @@ client = Groq(api_key=os.environ["GROQ_API_KEY"])
 def generate_response(query):
     # Pesquisar os documentos
     retrieved_docs = search_documents(query)
+    if not retrieved_docs:
+        print("⚠️ Nenhum documento relevante encontrado! O contexto está vazio.")
+
 
     # Concatenar os documentos
     context = "\n".join(retrieved_docs)
