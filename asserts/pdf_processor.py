@@ -8,7 +8,7 @@ def load_pdf(pdf_path):
     doc = fitz.open(pdf_path)
     
     # Extrair texto de todas as páginas e juntar
-    text = "\n".join([page.get_text("text") for page in doc])
+    text = "\n".join([page.get_text("blocks") for page in doc])
 
     # Normalizar formatação para evitar problemas de exibição
     text = re.sub(r'\s+', ' ', text)  # Remove múltiplos espaços
