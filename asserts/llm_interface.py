@@ -17,12 +17,24 @@ client = Groq(api_key=os.environ["GROQ_API_KEY"])
 def generate_response(query):
     # Pesquisar os documentos
     retrieved_docs = search_documents(query)
+    if not retrieved_docs:
+        print("Não sei, pois isso não está no documento.")
+
 
     # Concatenar os documentos
     context = "\n".join(retrieved_docs)
 
     # Formatar a entrada para o modelo
-    prompt = f"Contexto:\n{context}\n\nPergunta: {query}\nResposta:"
+    prompt = f"""
+        Você é um assistente de IA que só pode responder perguntas com base no documento fornecido.
+        Se a pergunta não puder ser respondida com as informações do documento, apenas responda:
+        "Desculpe, não encontrei informações sobre isso. "
+
+        Contexto:\n{context}\n
+        Pergunta: {query}\n
+        Resposta:
+        """
+
 
     # Gerar a resposta
     response = client.chat.completions.create(
