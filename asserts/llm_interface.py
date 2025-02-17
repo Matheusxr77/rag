@@ -17,9 +17,10 @@ client = Groq(api_key=os.environ["GROQ_API_KEY"])
 def generate_response(query):
     # Pesquisar os documentos
     retrieved_docs = search_documents(query)
-    if not retrieved_docs:
-        print("Não sei, pois isso não está no documento.")
 
+    if not retrieved_docs:
+        print("DEBUG: Resposta não gerada a partir do PDF indexado.")
+        return "Desculpe, não encontrei informações sobre isso."
 
     # Concatenar os documentos
     context = "\n".join(retrieved_docs)
@@ -27,6 +28,7 @@ def generate_response(query):
     # Formatar a entrada para o modelo
     prompt = f"""
         Você é um assistente de IA que só pode responder perguntas com base no documento fornecido.
+        Não informe ao usuário que você pesquisou no documento, nem mencione o documento.
         Se a pergunta não puder ser respondida com as informações do documento, apenas responda:
         "Desculpe, não encontrei informações sobre isso. "
 
@@ -35,12 +37,19 @@ def generate_response(query):
         Resposta:
         """
 
-
     # Gerar a resposta
     response = client.chat.completions.create(
         model="llama3-8b-8192",
         messages=[{"role": "user", "content": prompt}]
     )
 
+    resposta = response.choices[0].message.content
+
+    # Verificar se a resposta contém o contexto do documento indexado
+    if any(doc.lower() in resposta.lower() for doc in retrieved_docs):
+        print("DEBUG: Resposta gerada a partir do PDF indexado.")
+    else:
+        print("DEBUG: Resposta pode ter sido gerada a partir da internet ou extrapolada.")
+
     # Retornar a resposta
-    return response.choices[0].message.content
+    return resposta
