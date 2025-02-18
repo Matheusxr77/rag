@@ -5,7 +5,7 @@ import numpy as np
 from asserts.llm_interface import generate_response
 from sklearn.metrics import mean_absolute_error, mean_absolute_percentage_error, precision_score, accuracy_score
 from sklearn.preprocessing import LabelEncoder
-from asserts.config import METRICS_CSV, EMBEDDING_MODEL, LLM_MODEL, CHUNK_SIZE, CHUNK_OVERLAP, TOP_K
+from asserts.config import METRICS_CSV, EMBEDDING_MODEL, LLM_MODEL, CHUNK_SIZE, CHUNK_OVERLAP, TOP_K, MAX_TOKENS
 
 EMBEDDING_MODEL = EMBEDDING_MODEL.model_name
 
@@ -47,14 +47,14 @@ def save_metrics_to_csv(query, response, response_time, expected_answer, relevan
         
         if not file_exists:
             writer.writerow([  # Adiciona cabeçalho apenas se o arquivo não existir
-                "Pergunta", "Resposta Esperada", "Resposta Gerada", 
+                "Pergunta", "Resposta Esperada", "Resposta Gerada", "Máximo de Tokens",
                 "Tempo de Resposta (s)", "Relevância", "Precisão", "Acurácia",
                 "Modelo de Linguagem", "Modelo de Embedding", 
                 "Chunk Size", "Chunk Overlap", "Top K"
             ])
         
         writer.writerow([  # Adiciona dados de cada interação
-            query, expected_answer, response, round(response_time, 4), 
+            query, expected_answer, response, round(response_time, 4), MAX_TOKENS,
             round(relevance, 4), round(precision, 4), round(accuracy, 4),
             LLM_MODEL, EMBEDDING_MODEL, CHUNK_SIZE, CHUNK_OVERLAP, TOP_K
         ])
@@ -87,6 +87,10 @@ def calculate_metrics(questions, expected_answers):
         # Tokenização das respostas
         expected_tokens = tokenize(expected)
         predicted_tokens = tokenize(predicted)
+        
+        # Imprime a quantidade de tokens
+        print(f"Quantidade de tokens esperados: {len(expected_tokens)}")
+        print(f"Quantidade de tokens previstos: {len(predicted_tokens)}")
 
         # Certifique-se de que há pelo menos um rótulo em comum
         all_labels = list(set(expected_tokens + predicted_tokens))

@@ -6,3 +6,4 @@ EMBEDDING_MODEL = HuggingFaceEmbeddings(model_name="sentence-transformers/all-Mi
 CHUNK_SIZE = 256
 CHUNK_OVERLAP = 25
 TOP_K = 5
+MAX_TOKENS = 512
