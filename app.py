@@ -16,7 +16,7 @@ st.title("📄 Chat RAG - Imposto de Renda")
 st.write("Faça perguntas sobre o imposto de renda e obtenha respostas baseadas nos dados do governo federal!")
 
 # Campo de entrada
-query = st.chat_input()
+query = st.chat_input("Digite sua pergunta:")
 
 # Verificar se a consulta não está vazia
 if query:
@@ -42,8 +42,8 @@ for role, response in st.session_state.chat_history:
             # Mostrar a pergunta do usuário
             st.markdown(response)
 
-# Calcular métricas globais após o chat
-if st.button("Calcular Métricas Globais"):
-    questions, expected_answers = load_questions_answers()
-    calculate_metrics(questions, expected_answers)
-    st.success("✅ Métricas calculadas com sucesso!")
+# Carregar perguntas e respostas esperadas
+questions, expected_answers = load_questions_answers()
+
+# Calcular métricas globais constantemente
+calculate_metrics(questions, expected_answers)
