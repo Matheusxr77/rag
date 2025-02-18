@@ -5,12 +5,9 @@ import numpy as np
 from asserts.llm_interface import generate_response
 from sklearn.metrics import mean_absolute_error, mean_absolute_percentage_error, precision_score, accuracy_score
 from sklearn.preprocessing import LabelEncoder
-from asserts.config import METRICS_CSV
+from asserts.config import METRICS_CSV, EMBEDDING_MODEL, LLM_MODEL, CHUNK_SIZE, CHUNK_OVERLAP, TOP_K
 
-LLM_MODEL = "llama3-8b-8192"
-EMBEDDING_MODEL = "paraphrase-xlm-r-multilingual-v1"
-CHUNK_SIZE = 256
-CHUNK_OVERLAP = 25
+EMBEDDING_MODEL = EMBEDDING_MODEL.model_name
 
 def load_questions_answers(csv_path="./files/questions.csv"):
     """Carrega perguntas e respostas esperadas de um arquivo CSV."""
@@ -53,13 +50,13 @@ def save_metrics_to_csv(query, response, response_time, expected_answer, relevan
                 "Pergunta", "Resposta Esperada", "Resposta Gerada", 
                 "Tempo de Resposta (s)", "Relevância", "Precisão", "Acurácia",
                 "Modelo de Linguagem", "Modelo de Embedding", 
-                "Chunk Size", "Chunk Overlap"
+                "Chunk Size", "Chunk Overlap", "Top K"
             ])
         
         writer.writerow([  # Adiciona dados de cada interação
             query, expected_answer, response, round(response_time, 4), 
             round(relevance, 4), round(precision, 4), round(accuracy, 4),
-            LLM_MODEL, EMBEDDING_MODEL, CHUNK_SIZE, CHUNK_OVERLAP
+            LLM_MODEL, EMBEDDING_MODEL, CHUNK_SIZE, CHUNK_OVERLAP, TOP_K
         ])
 
 def tokenize(text):

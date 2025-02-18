@@ -3,6 +3,7 @@ import os
 from groq import Groq
 from asserts.vector_store import search_documents
 from dotenv import load_dotenv
+from asserts.config import LLM_MODEL
 
 # Carregar as variáveis do arquivo .env
 load_dotenv()
@@ -39,7 +40,7 @@ def generate_response(query):
 
     # Gerar a resposta
     response = client.chat.completions.create(
-        model="llama3-8b-8192",
+        model=LLM_MODEL,
         messages=[{"role": "user", "content": prompt}]
     )
 

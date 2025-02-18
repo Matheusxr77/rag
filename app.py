@@ -1,12 +1,7 @@
-import csv
 import time
-import os
 import streamlit as st
 from asserts.llm_interface import generate_response
-from asserts.pdf_processor import load_pdf  
-from asserts.vector_store import embedding_model  # Para capturar modelo de embedding
 from asserts.metrics import load_questions_answers, calculate_metrics  # Importe as funções de métricas
-from asserts.config import METRICS_CSV
 
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []

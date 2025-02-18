@@ -1,19 +1,16 @@
 # Importar bibliotecas
 import os
 from langchain_chroma import Chroma
-from langchain_huggingface import HuggingFaceEmbeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from asserts.pdf_processor import load_pdf, chunk_text
-
-# Instancia o modelo de incorporação
-embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+from asserts.config import EMBEDDING_MODEL, CHUNK_SIZE, CHUNK_OVERLAP, TOP_K
 
 persist_directory = "./chroma_db"
 if not os.path.exists(persist_directory):
     os.makedirs(persist_directory)
 
 # Instancia o vector store com o modelo de incorporação
-vector_store = Chroma(persist_directory=persist_directory, embedding_function=embedding_model)
+vector_store = Chroma(persist_directory=persist_directory, embedding_function=EMBEDDING_MODEL)
 
 def index_pdf(pdf_path="./files/imposto_renda.pdf"):  
     """Indexa um documento PDF no banco de vetores"""
@@ -55,14 +52,14 @@ def index_pdf(pdf_path="./files/imposto_renda.pdf"):
     stored_texts = vector_store._collection.peek(3)  
     print(f"📄 Textos armazenados: {stored_texts}")
 
-def split_query(query, chunk_size=256, chunk_overlap=25):
+def split_query(query, chunk_size=CHUNK_SIZE, chunk_overlap=CHUNK_OVERLAP):
     """Divide a query em pedaços menores para busca eficiente."""
     if len(query) > chunk_size:
         text_splitter = RecursiveCharacterTextSplitter(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
         return text_splitter.split_text(query)
     return [query]
 
-def search_documents(query, top_k=5):
+def search_documents(query, top_k=TOP_K):
     print(f"🔍 Buscando documentos com a query: {query}")
 
     indexed_count = vector_store._collection.count()
@@ -73,7 +70,7 @@ def search_documents(query, top_k=5):
     query_chunks = split_query(query)
 
     try:
-        query_embeddings = [embedding_model.embed_query(chunk) for chunk in query_chunks]
+        query_embeddings = [EMBEDDING_MODEL.embed_query(chunk) for chunk in query_chunks]
     except Exception as e:
         print(f"❌ Erro ao gerar embeddings da query: {e}")
         return []
